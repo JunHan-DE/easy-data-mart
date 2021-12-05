@@ -1,0 +1,93 @@
+# Values passed when installing Kafka Helm. It contains configs of S3 Sink Connect for kafka cluster
+auth:
+  clientProtocol: sasl
+  interBrokerProtocol: plaintext
+  jaas:
+    clientUser: kafka
+    clientPassword: project-test
+extraDeploy: |-
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: {{ include "kafka.fullname" . }}-connect
+      labels: {{- include "kafka.labels" . | nindent 6 }}
+        app.kubernetes.io/component: connector
+    spec:
+      replicas: 1
+      selector:
+        matchLabels: {{- include "kafka.matchLabels" . | nindent 8 }}
+          app.kubernetes.io/component: connector
+      template:
+        metadata:
+          labels: {{- include "kafka.labels" . | nindent 10 }}
+            app.kubernetes.io/component: connector
+        spec:
+          containers:
+            - name: connect
+              image: oiuy00/mykafka:1.0
+              imagePullPolicy: IfNotPresent
+              command:
+                - /bin/bash
+                - -ec
+                - |
+                  /opt/bitnami/kafka/bin/connect-distributed.sh  /config/connect-distributed.properties /config/s3.properties
+              ports:
+                - name: connector
+                  containerPort: 8083
+              volumeMounts:
+                - name: configuration
+                  mountPath: /config
+          volumes:
+            - name: configuration
+              configMap:
+                name: {{ include "kafka.fullname" . }}-connect
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: {{ include "kafka.fullname" . }}-connect
+      labels: {{- include "kafka.labels" . | nindent 6 }}
+        app.kubernetes.io/component: connector
+    data:
+      connect-distributed.properties: |-
+        bootstrap.servers = {{ include "kafka.fullname" . }}-0.{{ include "kafka.fullname" . }}-headless.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:{{ .Values.service.port }}
+        key.converter=org.apache.kafka.connect.json.JsonConverter
+        value.converter=org.apache.kafka.connect.json.JsonConverter
+        key.converter.schemas.enable=true
+        value.converter.schemas.enable=true
+        offset.storage.file.filename=/tmp/connect.offsets
+        offset.flush.interval.ms=1000
+        plugin.path=/opt/bitnami/kafka/plugins
+        sasl.mechanism=PLAIN
+        security.protocol=SASL_PLAINTEXT
+        sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required \
+          username="kafka" \
+          password="project-test";
+        consumer.sasl.mechanism=PLAIN
+        consumer.security.protocol=SASL_PLAINTEXT
+        consumer.sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required \
+          username="kafka" \
+          password="project-test";
+      s3.properties: |-
+        name=s3-sink
+        topics=amazon-payment
+        connector.class=com.s3.kafka.connect.s3SinkConnector
+        tasks.max=1
+        key.converter=org.apache.kafka.connect.json.JsonConverter
+        value.converter=org.apache.kafka.connect.json.JsonConverter
+        key.converter.schemas.enable=false
+        value.converter.schemas.enable=false
+        database=mydb
+        collection=sink
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: {{ include "kafka.fullname" . }}-connect
+      labels: {{- include "kafka.labels" . | nindent 6 }}
+        app.kubernetes.io/component: connector
+    spec:
+      ports:
+        - protocol: TCP
+          port: 8083
+          targetPort: connector
+      selector: {{- include "kafka.matchLabels" . | nindent 6 }}
+        app.kubernetes.io/component: connector
