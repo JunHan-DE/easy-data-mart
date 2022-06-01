@@ -17,4 +17,4 @@ override.tf.json
 *.tfvars
 .DS_Store
 /.idea/
-
+/venv/
