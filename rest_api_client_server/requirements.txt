@@ -1,0 +1,9 @@
+confluent-kafka
+fastapi
+pydantic
+uvicorn
+six
+pyrsistent
+jsonschema
+protobuf
+requests

@@ -7,4 +7,3 @@ class user_data(BaseModel):
     name: str
     gender: str
     # event_name: Optional[str] = None  # optional
-
