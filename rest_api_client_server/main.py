@@ -41,6 +41,7 @@ async def create_item1(item: Item):
     except KafkaException as ex:
         raise HTTPException(status_code=500, detail=ex.args[0].str())
 
+
 cnt = 0
 
 
@@ -81,8 +82,8 @@ async def create_item5(item: Item):
     return {"timestamp": time()}
 
 
-if __name__ == '__main__':
-    uvicorn.run(app, host='127.0.0.1', port=8000)
+if __name__ == "__main__":
+    uvicorn.run(app, host="127.0.0.1", port=8000)
 
 # app = Flask(__name__)
 #

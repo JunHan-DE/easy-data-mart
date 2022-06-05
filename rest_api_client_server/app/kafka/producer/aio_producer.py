@@ -60,13 +60,12 @@ class AIOProducer:
         def ack(err, msg):
             if err:
                 self._loop.call_soon_threadsafe(
-                    result.set_exception, KafkaException(err))
+                    result.set_exception, KafkaException(err)
+                )
             else:
-                self._loop.call_soon_threadsafe(
-                    result.set_result, msg)
+                self._loop.call_soon_threadsafe(result.set_result, msg)
             if on_delivery:
-                self._loop.call_soon_threadsafe(
-                    on_delivery, err, msg)
+                self._loop.call_soon_threadsafe(on_delivery, err, msg)
 
         self._producer.produce(topic, value, on_delivery=ack)
         return result

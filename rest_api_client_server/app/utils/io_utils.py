@@ -13,7 +13,7 @@ class SQLAlchemy:
             self.init_app(app=app, **kwargs)
 
     def init_app(self, app: FastAPI, **kwargs) -> None:
-        """ DB initialization function """
+        """DB initialization function"""
 
         database_url = kwargs.get("DB_URL")
         pool_recycle = kwargs.setdefault("DB_POOL_RECYCLE", 900)  # what is this
@@ -25,7 +25,9 @@ class SQLAlchemy:
             pool_recycle=pool_recycle,
             pool_pre_ping=True,
         )
-        self._session = sessionmaker(autocommit=False, autoflush=False, bind=self._engine)
+        self._session = sessionmaker(
+            autocommit=False, autoflush=False, bind=self._engine
+        )
 
         @app.on_event("startup")
         def on_app_start():
@@ -39,7 +41,7 @@ class SQLAlchemy:
             logging.info("DB disconnected")
 
     def get_db(self) -> Session:
-        """ function to maintain DB session """
+        """function to maintain DB session"""
         if self._session is None:
             raise Exception("must call 'init_app' first.")
         db_session = None
@@ -62,4 +64,6 @@ class SQLAlchemy:
 
 
 database = SQLAlchemy()
-Base = declarative_base()  # instance of base class which maintains a catalog of classes & tables relative to that base
+Base = (
+    declarative_base()
+)  # instance of base class which maintains a catalog of classes & tables relative to that base
