@@ -2,30 +2,30 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: flaskapi-deployment
+  name: fastapi-deployment
   labels:
-    app: flaskapi
+    app: fastapi
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: flaskapi
+      app: fastapi
   template:
     metadata:
       labels:
-        app: flaskapi
+        app: fastapi
     spec:
       containers:
-        - name: flaskapi
-          image: flask-api
-          imagePullPolicy: Never
+        - name: fastapi
+          image: oiuy00/server-test:latest
+          imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 5000
+            - containerPort: 8000
           env:
             - name: db_root_password
               valueFrom:
                 secretKeyRef:
-                  name: flaskapi-secrets
+                  name: fastapi-secrets
                   key: db_root_password
             - name: db_name
               value: flaskapi
@@ -34,12 +34,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: flask-service
+  name: fastapi-service
 spec:
   ports:
-    - port: 5000
+    - port: 8000
       protocol: TCP
-      targetPort: 5000
+      targetPort: 8000
   selector:
-    app: flaskapi
+    app: fastapi
   type: LoadBalancer
