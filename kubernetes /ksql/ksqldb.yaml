@@ -1,0 +1,44 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ksqldb
+  labels:
+    app: ksqldb
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: ksqldb
+  template:
+    metadata:
+      labels:
+        app: ksqldb
+    spec:
+      containers:
+        - name: ksqldb-server
+          image: oiuy00/ksql:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8088
+          command: ["/bin/sh"]
+          args: ["-c", "/usr/bin/ksql-server-start /etc/ksqldb/ksql-server.properties"]
+        - name: ksqldb-cli
+          image: confluentinc/ksqldb-cli:0.26.0
+          command: ["/bin/sh"]
+      restartPolicy: OnFailure
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: ksqldb-service
+spec:
+  ports:
+    - port: 8088
+      protocol: TCP
+      targetPort: 8088
+  selector:
+    app: ksqldb
+  type: LoadBalancer

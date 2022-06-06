@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: fastapi
-          image: oiuy00/server-test:latest
+          image: oiuy00/data-mesh-server:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000
