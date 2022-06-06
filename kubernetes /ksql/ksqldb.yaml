@@ -1,0 +1,60 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ksqldb
+  namespace: jun-test-kafka
+  labels:
+    app: ksqldb
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: ksqldb
+  template:
+    metadata:
+      labels:
+        app: ksqldb
+    spec:
+      containers:
+        - name: ksqldb-server
+          image: confluentinc/ksqldb-server:0.26.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8088
+          env:
+            - name: KSQL_LISTENERS
+              value: "http://0.0.0.0:8088"
+            - name: KSQL_BOOTSTRAP_SERVERS
+              value: "jun-kafka-0.jun-kafka-headless.jun-test-kafka.svc.cluster.local:9092,jun-kafka-1.jun-kafka-headless.jun-test-kafka.svc.cluster.local:9092,jun-kafka-2.jun-kafka-headless.jun-test-kafka.svc.cluster.local:9092"
+            - name: KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE
+              value: "true"
+            - name: KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE
+              value: "true"
+        - name: ksqldb-cli
+          image: confluentinc/ksqldb-cli:0.26.0
+          env:
+            - name: KSQL_LISTENERS
+              value: "http://0.0.0.0:8090"
+            - name: KSQL_BOOTSTRAP_SERVERS
+              value: "jun-kafka-0.jun-kafka-headless.jun-test-kafka.svc.cluster.local:9092,jun-kafka-1.jun-kafka-headless.jun-test-kafka.svc.cluster.local:9092,jun-kafka-2.jun-kafka-headless.jun-test-kafka.svc.cluster.local:9092"
+            - name: KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE
+              value: "true"
+            - name: KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE
+              value: "true"
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: ksqldb-service
+  namespace: jun-test-kafka
+spec:
+  ports:
+    - port: 8088
+      protocol: TCP
+      targetPort: 8088
+  selector:
+    app: ksqldb
+  type: LoadBalancer

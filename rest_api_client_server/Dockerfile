@@ -1,4 +1,4 @@
-FROM python:3.6-slim
+FROM python:3.9
 
 RUN apt-get clean \
     && apt-get -y update
@@ -15,5 +15,5 @@ RUN pip install -r requirements.txt --src /usr/local/src
 
 COPY . .
 
-EXPOSE 5000
-CMD [ "python", "main.py" ]
+EXPOSE 8000
+CMD [ "uvicorn", "main:app" ]
