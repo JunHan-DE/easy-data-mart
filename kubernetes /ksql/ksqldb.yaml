@@ -7,7 +7,7 @@ metadata:
   labels:
     app: ksqldb
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: ksqldb
@@ -31,6 +31,30 @@ spec:
               value: "true"
             - name: KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE
               value: "true"
+            - name: KSQL_CONNECT_GROUP_ID
+              value: "ksql-connect-cluster"
+            - name: KSQL_CONNECT_BOOTSTRAP_SERVERS
+              value: "jun-kafka-0.jun-kafka-headless.jun-test-kafka.svc.cluster.local:9092,jun-kafka-1.jun-kafka-headless.jun-test-kafka.svc.cluster.local:9092,jun-kafka-2.jun-kafka-headless.jun-test-kafka.svc.cluster.local:9092"
+            - name: KSQL_CONNECT_KEY_CONVERTER
+              value: "org.apache.kafka.connect.storage.StringConverter"
+            - name: KSQL_CONNECT_VALUE_CONVERTER
+              value: "io.confluent.connect.avro.AvroConverter"
+            - name: KSQL_CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE
+              value: "false"
+            - name: KSQL_CONNECT_CONFIG_STORAGE_TOPIC
+              value: "ksql-connect-configs"
+            - name: KSQL_CONNECT_OFFSET_STORAGE_TOPIC
+              value: "ksql-connect-offsets"
+            - name: KSQL_CONNECT_STATUS_STORAGE_TOPIC
+              value: "ksql-connect-statuses"
+            - name: KSQL_CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR
+              value: "1"
+            - name: KSQL_CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR
+              value: "1"
+            - name: KSQL_CONNECT_STATUS_STORAGE_REPLICATION_FACTOR
+              value: "1"
+            - name: KSQL_CONNECT_PLUGIN_PATH
+              value: "/usr/share/kafka/plugins"
         - name: ksqldb-cli
           image: confluentinc/ksqldb-cli:0.26.0
           env:
