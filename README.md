@@ -2,8 +2,6 @@
 
 ## Description
 
----
-
 ### End-to-end data system that a client can configure data pipeline as well as a data engineer can handle the governance
 
 As company grows, data team has increased the risk of losing the domain values as they ETL various service domain data.
@@ -13,18 +11,16 @@ while data team can take advantage of the data management with Kafka.
 
 ## Architecture 
 
----
+![data mesh drawio-4](https://user-images.githubusercontent.com/74975256/176082480-84112fbc-fab2-40b1-b4f9-fd0caf260c2c.png)
 
-![](../../../../Downloads/data mesh.drawio-4.png)
 
 Users can request their query for data transformation via POST. 
 POST includes source/target database information.
 
-![](../../../dkre.png)
+<img width="831" alt="dkre" src="https://user-images.githubusercontent.com/74975256/176082569-b31a409d-abf7-429d-bc9c-edd24e388549.png">
+
 
 ## How to Use
-
----
 
 ### 1. deploy Kubernetes Cluster on EC2
 
@@ -59,9 +55,7 @@ POST includes source/target database information.
 
 ## TODO
 
----
 
 * Currently data mesh supports PostgreSQL, S3, and Elastic Search. more and more database
   need to be supported.
 * Support complicated transformation logic. 
-* 
