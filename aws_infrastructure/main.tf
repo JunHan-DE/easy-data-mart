@@ -24,10 +24,9 @@ data "aws_ami" "ubuntu_base" {
 }
 
 resource "aws_key_pair" "amazon_data" {
-  key_name   = "amazon_data"
+  key_name   = var.aws_public_key_name
   public_key = file(var.path_to_public_key)
 }
-
 
 resource "aws_instance" "kubernetes-master" {
   ami                    = data.aws_ami.ubuntu_base.image_id
